@@ -1,6 +1,6 @@
 # Paleidimo kontrolinis sąrašas
 
-Patikros data: 2026-09-09. Tikrinamas commit: įrašyti po galutinio release commit.
+Patikros data: 2026-09-09. Release patikrų bazinis commit: `0ace372`.
 
 - [x] Deterministinė A/B/C šaltinių ir publikavimo politika turi automatinius testus.
 - [x] Teiginiai, santraukos ir chronologija išlaiko ryšį su šaltiniu.
