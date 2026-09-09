@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "check:sources": "node --experimental-strip-types scripts/check-sources.ts",
+    "import:history": "node --experimental-strip-types scripts/import-history.ts",
     "start": "next start",
     "lint": "eslint . --max-warnings=0",
     "typecheck": "tsc --noEmit",
