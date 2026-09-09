@@ -31,3 +31,85 @@ h1 {
   letter-spacing: -0.06em;
   margin: 0;
 }
+
+.eyebrow {
+  color: #9b1c25;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.admin-shell {
+  background: #f1f1ef;
+  min-height: 100vh;
+}
+
+.review-panel {
+  background: #fff;
+  border-top: 0.3rem solid #111;
+  padding: 2rem;
+}
+
+.reason-list {
+  margin: 0.8rem 0 2rem;
+  padding-left: 1.25rem;
+}
+
+.claim-review section {
+  border-top: 1px solid #bbb;
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: 1fr 1fr;
+  padding: 1.5rem 0;
+}
+
+.claim-review h2 {
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.claim-review blockquote {
+  border-left: 0.25rem solid #9b1c25;
+  margin: 0 0 0.75rem;
+  padding-left: 1rem;
+}
+
+.review-actions {
+  border-top: 1px solid #111;
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  padding-top: 1.5rem;
+}
+
+.review-actions button {
+  background: #fff;
+  border: 1px solid #111;
+  border-radius: 0;
+  padding: 0.8rem 1rem;
+}
+
+.review-actions .primary-action {
+  background: #111;
+  color: #fff;
+}
+
+.review-queue {
+  list-style: none;
+  padding: 0;
+}
+
+.review-queue li {
+  border-top: 1px solid #aaa;
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem 0;
+}
+
+@media (max-width: 44rem) {
+  .claim-review section {
+    grid-template-columns: 1fr;
+  }
+}
