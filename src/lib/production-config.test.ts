@@ -12,7 +12,7 @@ describe("production deployment configuration", () => {
 
   it("defines separate web, worker, database, object storage, migration and TLS services", () => {
     const compose = read("docker-compose.production.yml");
-    for (const service of ["web:", "worker:", "postgres:", "minio:", "migrate:", "caddy:"]) expect(compose).toContain(service);
+    for (const service of ["web:", "worker:", "postgres:", "minio:", "migrate:", "backup:", "caddy:"]) expect(compose).toContain(service);
     expect(read("Dockerfile")).toContain("npm run build");
     expect(read("deploy/Caddyfile")).toContain("reverse_proxy web:3000");
   });
@@ -20,6 +20,9 @@ describe("production deployment configuration", () => {
   it("documents and scripts encrypted backups and restore verification", () => {
     expect(read("deploy/backup-postgres.sh")).toMatch(/pg_dump/);
     expect(read("deploy/backup-postgres.sh")).toMatch(/age/);
+    expect(read("deploy/backup.Dockerfile")).toMatch(/apk add --no-cache age/);
+    expect(read("drizzle/0001_chilly_caretaker.sql")).toMatch(/CREATE TABLE "consumer_reports"/);
+    expect(read("drizzle/0001_chilly_caretaker.sql")).toMatch(/"version" integer DEFAULT 1 NOT NULL/);
     expect(read("docs/hostinger-deployment.md")).toMatch(/atkūrimo bandym/i);
   });
 });

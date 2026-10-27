@@ -18,8 +18,7 @@ function dependencies(overrides: Record<string, unknown> = {}) {
     lookupKey: "test-key",
     encrypt: (value: string) => `encrypted:${value}`,
     getReporterVerification: async () => ({ emailVerified: true, phoneVerified: true }),
-    findDuplicate: async () => undefined,
-    save: async () => "report-1",
+    saveIdempotently: async () => ({ id: "report-1", duplicate: false }),
     ...overrides,
   };
 }
@@ -30,12 +29,12 @@ describe("submitConsumerReport", () => {
   });
 
   it("returns the existing report for an idempotent duplicate", async () => {
-    await expect(submitConsumerReport(input, dependencies({ findDuplicate: async () => "report-existing" }))).resolves.toEqual({ id: "report-existing", duplicate: true });
+    await expect(submitConsumerReport(input, dependencies({ saveIdempotently: async () => ({ id: "report-existing", duplicate: true }) }))).resolves.toEqual({ id: "report-existing", duplicate: true });
   });
 
   it("stores normalized identifier hashes without returning private values", async () => {
     let saved: unknown;
-    const result = await submitConsumerReport(input, dependencies({ save: async (record: unknown) => { saved = record; return "report-1"; } }));
+    const result = await submitConsumerReport(input, dependencies({ saveIdempotently: async (record: unknown) => { saved = record; return { id: "report-1", duplicate: false }; } }));
     expect(saved).toMatchObject({ identifiers: [{ type: "phone", maskedValue: "+370 6•• ••999" }] });
     expect(saved).not.toHaveProperty("identifiers.0.value");
     expect(result).toEqual({ id: "report-1", duplicate: false });

@@ -11,7 +11,7 @@ it("submits an exact seller lookup with an explicit identifier type", async () =
   fireEvent.change(screen.getByLabelText("Ko ieškote?"), { target: { value: "phone" } });
   fireEvent.change(screen.getByLabelText("Paieškos reikšmė"), { target: { value: "+37069999999" } });
   fireEvent.click(screen.getByRole("button", { name: "Patikrinti" }));
-  await waitFor(() => expect(fetchMock).toHaveBeenCalledWith("/api/sellers/search?type=phone&q=%2B37069999999"));
+  await waitFor(() => expect(fetchMock).toHaveBeenCalledWith("/api/sellers/search", expect.objectContaining({ method: "POST", body: JSON.stringify({ type: "phone", value: "+37069999999" }) })));
   expect(await screen.findByText(/rezultato nebuvimas nereiškia/i)).toBeVisible();
 });
 

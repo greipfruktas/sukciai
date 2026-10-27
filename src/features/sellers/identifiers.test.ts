@@ -20,12 +20,19 @@ describe("normalizeSellerIdentifier", () => {
 
   it.each([
     ["phone", "123"],
+    ["phone", "+3706abc1234567"],
     ["iban", "LT001"],
     ["company_code", "abc"],
     ["website", "javascript:alert(1)"],
     ["facebook", "https://example.com/not-facebook"],
   ] as const)("rejects invalid %s input", (type, input) => {
     expect(() => normalizeSellerIdentifier(type, input)).toThrow();
+  });
+
+  it("preserves identity-bearing URL parameters while removing tracking", () => {
+    expect(normalizeSellerIdentifier("facebook", "facebook.com/profile.php?id=111&utm_source=share")).toBe("https://facebook.com/profile.php?id=111");
+    expect(normalizeSellerIdentifier("facebook", "facebook.com/profile.php?id=222")).not.toBe(normalizeSellerIdentifier("facebook", "facebook.com/profile.php?id=111"));
+    expect(normalizeSellerIdentifier("website", "shop.example.lt/item?variant=blue&fbclid=tracking")).toBe("https://shop.example.lt/item?variant=blue");
   });
 });
 

@@ -9,10 +9,13 @@ export type SellerIdentifierType =
   | "facebook";
 
 function normalizePhone(value: string): string {
-  let digits = value.replace(/\D/g, "");
+  const trimmed = value.trim();
+  if (!/^(?:\+|00)?[\d\s().-]+$/.test(trimmed)) throw new Error("Netinkamas telefono numeris");
+  let digits = trimmed.replace(/\D/g, "");
+  if (trimmed.startsWith("00")) digits = digits.slice(2);
   if (digits.startsWith("8") && digits.length === 9) digits = `370${digits.slice(1)}`;
   if (digits.startsWith("370") && digits.length === 11) return `+${digits}`;
-  if (value.trim().startsWith("+") && digits.length >= 8 && digits.length <= 15) return `+${digits}`;
+  if ((trimmed.startsWith("+") || trimmed.startsWith("00")) && digits.length >= 8 && digits.length <= 15) return `+${digits}`;
   throw new Error("Netinkamas telefono numeris");
 }
 
@@ -41,7 +44,11 @@ function normalizeUrl(value: string, facebookOnly: boolean): string {
   url.protocol = "https:";
   url.hostname = hostname;
   url.port = "";
-  url.search = "";
+  const trackingParameters = new Set(["fbclid", "gclid", "ref", "ref_src", "ref_url"]);
+  for (const key of [...url.searchParams.keys()]) {
+    if (key.toLowerCase().startsWith("utm_") || trackingParameters.has(key.toLowerCase())) url.searchParams.delete(key);
+  }
+  url.searchParams.sort();
   url.hash = "";
   url.pathname = url.pathname === "/" ? "" : url.pathname.replace(/\/+$/, "");
   return url.toString().replace(/\/$/, "");

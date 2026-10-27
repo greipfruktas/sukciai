@@ -6,6 +6,7 @@ function repository() {
   const decisions: unknown[] = [];
   return {
     decisions,
+    loadPublicationContext: async () => ({ verifiedReportCount: 1, independentReporterCount: 1, hasOfficialSource: false, hasUnresolvedConflict: false, responseDeadline: new Date("2026-10-26T00:00:00Z"), urgentRisk: false }),
     applyConsumerDecision: async (decision: { expectedVersion: number }) => {
       if (decision.expectedVersion !== version) throw new DecisionConflictError();
       decisions.push(decision);
@@ -27,5 +28,16 @@ describe("consumer report decisions", () => {
     const user = { id: "publisher", role: "publisher" as const };
     await applyConsumerDecision({ reportId: "report-1", action: "monitor", reason: "Laukiama antro pranešimo", expectedVersion: 1 }, user, repo);
     await expect(applyConsumerDecision({ reportId: "report-1", action: "publish", reason: "Patvirtinta", expectedVersion: 1, publicationLevel: "verified_dispute" }, user, repo)).rejects.toBeInstanceOf(DecisionConflictError);
+  });
+
+  it("rejects publication above the trusted policy result", async () => {
+    const repo = repository();
+    await expect(applyConsumerDecision({ reportId: "report-1", action: "publish", reason: "Nepakanka pagrindo", expectedVersion: 1, publicationLevel: "repeated_pattern" }, { id: "publisher", role: "publisher" }, repo, new Date("2026-10-27T00:00:00Z"))).rejects.toThrow(/policy/i);
+  });
+
+  it("rejects publication before the seller response deadline", async () => {
+    const repo = repository();
+    repo.loadPublicationContext = async () => ({ verifiedReportCount: 1, independentReporterCount: 1, hasOfficialSource: false, hasUnresolvedConflict: false, responseDeadline: new Date("2026-11-03T00:00:00Z"), urgentRisk: false });
+    await expect(applyConsumerDecision({ reportId: "report-1", action: "publish", reason: "Per anksti", expectedVersion: 1, publicationLevel: "verified_dispute" }, { id: "publisher", role: "publisher" }, repo, new Date("2026-10-27T00:00:00Z"))).rejects.toThrow(/deadline/i);
   });
 });

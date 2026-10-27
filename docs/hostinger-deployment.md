@@ -12,7 +12,7 @@
 
 ## Atsarginės kopijos ir atkūrimo bandymas
 
-Serveryje įdiekite `age`, laikykite gavėjo viešą raktą `BACKUP_AGE_RECIPIENT`, o privatų raktą — už VPS ribų. Kasnakt paleiskite `deploy/backup-postgres.sh` PostgreSQL konteineryje su prijungtu `/backups` tomu ir užšifruotas kopijas perkelkite į kitą regioną ar tiekėją.
+Laikykite `age` gavėjo viešą raktą `BACKUP_AGE_RECIPIENT`, o privatų raktą — už VPS ribų. Kasnakt paleiskite tam skirtą atvaizdą: `docker compose -f docker-compose.production.yml --profile backup run --rm backup`. Jame yra ir `pg_dump`, ir `age`, o `/backups` prijungtas kaip atskiras tomas. Užšifruotas kopijas reguliariai perkelkite į kitą regioną ar tiekėją.
 
 Kas ketvirtį atlikite atkūrimo bandymą izoliuotoje staging DB: iššifruokite kopiją, paleiskite `pg_restore --clean --if-exists`, vykdykite `npm run db:check` ir smoke testus. Produkcinės DB neatkurkite tiesiogiai, kol staging patikra nebaigta.
 

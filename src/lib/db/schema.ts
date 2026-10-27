@@ -81,6 +81,7 @@ export const consumerReports = pgTable("consumer_reports", {
   authenticityConfirmed: boolean("authenticity_confirmed").notNull(),
   fingerprint: text("fingerprint").notNull().unique(),
   state: consumerReportState("state").notNull().default("submitted"),
+  version: integer("version").notNull().default(1),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });

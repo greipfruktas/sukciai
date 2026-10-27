@@ -24,7 +24,7 @@ export function SellerSearchForm() {
     event.preventDefault();
     setLoading(true); setError(""); setResponse(null);
     try {
-      const result = await fetch(`/api/sellers/search?type=${type}&q=${encodeURIComponent(query.trim())}`);
+      const result = await fetch("/api/sellers/search", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ type, value: query.trim() }) });
       const body = await result.json();
       if (!result.ok) throw new Error(body.error || "Paieška nepavyko");
       setResponse(body);

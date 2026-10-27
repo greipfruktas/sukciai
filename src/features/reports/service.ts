@@ -6,8 +6,7 @@ interface Dependencies {
   lookupKey: string;
   encrypt: (value: string) => string;
   getReporterVerification: (reporter: ConsumerReportInput["reporter"]) => Promise<Verification>;
-  findDuplicate: (fingerprint: string) => Promise<string | undefined>;
-  save: (record: Record<string, unknown>) => Promise<string>;
+  saveIdempotently: (record: Record<string, unknown>) => Promise<{ id: string; duplicate: boolean }>;
 }
 
 export async function submitConsumerReport(input: ConsumerReportInput, dependencies: Dependencies) {
@@ -31,10 +30,7 @@ export async function submitConsumerReport(input: ConsumerReportInput, dependenc
     String(report.amountCents),
     ...identifiers.map((identifier) => identifier.lookupHash).sort(),
   ].join("|"), dependencies.lookupKey);
-  const duplicateId = await dependencies.findDuplicate(fingerprint);
-  if (duplicateId) return { id: duplicateId, duplicate: true as const };
-
-  const id = await dependencies.save({
+  const saved = await dependencies.saveIdempotently({
     reporterVerificationId: verification.id,
     reporterNameEncrypted: dependencies.encrypt(report.reporter.name),
     description: report.description,
@@ -47,5 +43,5 @@ export async function submitConsumerReport(input: ConsumerReportInput, dependenc
     fingerprint,
     identifiers,
   });
-  return { id, duplicate: false as const };
+  return { id: saved.id, duplicate: saved.duplicate };
 }
