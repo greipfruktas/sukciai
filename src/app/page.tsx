@@ -1,7 +1,18 @@
 import Link from "next/link";
 import { SellerSearchForm } from "@/features/sellers/search-form";
 
-export default function HomePage() {
+function HoldingPage() {
+  return <main id="turinys" className="launch-page">
+    <div className="launch-shell">
+      <header className="launch-header"><span className="launch-wordmark">SUKČIAI<span>.LT</span></span><span>Ruošiama</span></header>
+      <section className="launch-hero"><p className="eyebrow">Vartotojų saugumo portalas</p><h1>Kuriame saugesnę vietą patikrinti pardavėją.</h1><p className="launch-deck">Čia galėsite patikrinti pardavėją prieš pervesdami pinigus ir pranešti apie neįvykdytą susitarimą. Viešinsime tik administratoriaus patikrintą informaciją su aiškiai nurodytais šaltiniais.</p></section>
+      <section className="launch-principles" aria-label="Portalo principai"><article><b>01</b><h2>Patikra</h2><p>Pranešimai nebus viešinami automatiškai.</p></article><article><b>02</b><h2>Šaltiniai</h2><p>Prie kiekvieno teiginio bus nurodytas jo pagrindas.</p></article><article><b>03</b><h2>Atsakymo teisė</h2><p>Susijęs asmuo ar įmonė galės pateikti savo poziciją.</p></article></section>
+      <footer className="launch-footer"><p>Portalas ruošiamas atsakingam viešam startui.</p><p>Patikrinta informacija · duomenų apsauga · redakcinė peržiūra</p></footer>
+    </div>
+  </main>;
+}
+
+function DemoHomePage() {
   return (
     <main id="turinys">
       <aside className="demo-notice"><strong>Kuriama demonstracinė versija.</strong> Paieška naudoja tik testinius įrašus. Tikri asmenys ir nepatvirtinti pranešimai neviešinami.</aside>
@@ -16,4 +27,8 @@ export default function HomePage() {
       <section className="public-funds-bridge"><div><p className="section-label">Atskira rubrika</p><h2>Viešieji pinigai</h2></div><p>Politikų ir institucijų atvejai lieka atskiroje redakcinėje erdvėje. Čia agreguojame tik oficialių institucijų ir patikimų žiniasklaidos šaltinių paskelbtą informaciją.</p><Link className="text-link" href="/viesieji-pinigai">Viešieji pinigai →</Link></section>
     </main>
   );
+}
+
+export default function HomePage() {
+  return process.env.PORTAL_MODE === "demo" ? <DemoHomePage /> : <HoldingPage />;
 }

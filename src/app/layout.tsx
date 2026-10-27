@@ -5,9 +5,13 @@ import "@/styles/globals.css";
 export const metadata: Metadata = {
   title: "Sukčiai.lt | Patikrinkite prieš mokėdami",
   description: "Patikrintų vartotojų ginčų ir oficialių šaltinių informacijos portalas.",
+  robots: { index: false, follow: false },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  if (process.env.PORTAL_MODE !== "demo") {
+    return <html lang="lt"><body>{children}</body></html>;
+  }
   return (
     <html lang="lt">
       <body>

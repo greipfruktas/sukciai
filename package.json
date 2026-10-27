@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "next dev",
+    "dev": "PORTAL_MODE=demo next dev",
     "build": "next build --webpack",
     "check:sources": "node --experimental-strip-types scripts/check-sources.ts",
     "import:history": "node --experimental-strip-types scripts/import-history.ts",
