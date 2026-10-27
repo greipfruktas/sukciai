@@ -2,7 +2,7 @@
 
 ## Aplinka ir paslaugos
 
-Programa naudoja Next.js, PostgreSQL ir pg-boss eilę. Privalomi gamybiniai kintamieji: `DATABASE_URL`, `OIDC_ISSUER`, `OIDC_CLIENT_ID`, `OIDC_CLIENT_SECRET`, `AI_API_KEY`; papildomi: `ALERT_WEBHOOK_URL`, `OBJECT_STORAGE_URL`, `SOURCE_CHECK_LIVE`. Paslaptys laikomos diegimo platformos saugykloje, ne Git.
+Programa naudoja Next.js, PostgreSQL, pg-boss eilę ir privačią S3 suderinamą objektų saugyklą. Privalomi gamybiniai kintamieji aprašyti `.env.example`; produkcijoje juos tikrina `validateProductionEnvironment`. Paslaptys laikomos tik VPS apsaugotame `.env.production` faile arba paslapčių saugykloje, ne Git.
 
 Administravimo OIDC klientui įjungiamas MFA, trumpa sesija ir tikslūs `viewer`, `publisher`, `admin` vaidmenys. Prieš gamybą dabartinį claims adapterį būtina sujungti su pasirinktu OIDC tiekėju ir apsaugoti `/admin/*` middleware sluoksnyje.
 
@@ -11,10 +11,10 @@ Administravimo OIDC klientui įjungiamas MFA, trumpa sesija ir tikslūs `viewer`
 1. Sukurti atsarginę DB kopiją ir patikrinti atkūrimo tašką.
 2. Paleisti `npm ci`, `npm run lint`, `npm run typecheck`, `npm test`, `npm run build`.
 3. Paleisti migracijas atskiru vienkartiniu procesu: `npm run db:migrate`.
-4. Diegti web procesą ir atskirą eilės workerį; tikrinti `/api/health`.
+4. Diegti web procesą ir atskirą eilės workerį; tikrinti `/api/health`, workerio `ready` žurnalą ir privatų objektų bucket.
 5. Paleisti `npm run check:sources -- --live` ir smoke testus.
 
-`/api/health` laukas `database: not_configured` yra priimtinas tik vietiniame makete. Gamybos readiness tikrinimas privalo reikalauti `configured` ir atskiros realios DB užklausos.
+`/api/health` laukas `database: not_configured` yra priimtinas tik vietiniame makete. Gamybos readiness tikrinimas privalo reikalauti `configured` ir atskiros realios DB užklausos. Konkretūs Hostinger žingsniai ir rollback tvarka pateikti `docs/hostinger-deployment.md`.
 
 ## Šaltiniai ir incidentai
 

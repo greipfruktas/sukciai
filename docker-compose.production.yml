@@ -1,0 +1,41 @@
+services:
+  web:
+    build: { context: ., target: runner }
+    env_file: .env.production
+    depends_on: { migrate: { condition: service_completed_successfully } }
+    restart: unless-stopped
+  worker:
+    build: { context: ., target: worker }
+    env_file: .env.production
+    depends_on: { migrate: { condition: service_completed_successfully } }
+    restart: unless-stopped
+  migrate:
+    build: { context: ., target: worker }
+    env_file: .env.production
+    command: ["npm", "run", "db:migrate"]
+    depends_on: { postgres: { condition: service_healthy } }
+    restart: "no"
+  postgres:
+    image: postgres:17-alpine
+    env_file: .env.production
+    volumes: ["postgres-data:/var/lib/postgresql/data"]
+    healthcheck: { test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"], interval: 10s, timeout: 5s, retries: 10 }
+    restart: unless-stopped
+  minio:
+    image: minio/minio:RELEASE.2025-09-07T16-13-09Z
+    env_file: .env.production
+    command: server /data
+    volumes: ["object-data:/data"]
+    restart: unless-stopped
+  caddy:
+    image: caddy:2.10-alpine
+    env_file: .env.production
+    ports: ["80:80", "443:443"]
+    volumes: ["./deploy/Caddyfile:/etc/caddy/Caddyfile:ro", "caddy-data:/data", "caddy-config:/config"]
+    depends_on: [web]
+    restart: unless-stopped
+volumes:
+  postgres-data:
+  object-data:
+  caddy-data:
+  caddy-config:

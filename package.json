@@ -9,6 +9,7 @@
     "check:sources": "node --experimental-strip-types scripts/check-sources.ts",
     "import:history": "node --experimental-strip-types scripts/import-history.ts",
     "start": "next start",
+    "worker": "node --experimental-strip-types scripts/worker.ts",
     "lint": "eslint . --max-warnings=0",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
