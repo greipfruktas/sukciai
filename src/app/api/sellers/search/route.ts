@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { SellerIdentifierType } from "@/features/sellers/identifiers";
 import { NO_RESULT_DISCLAIMER, type SellerSearchResponse } from "@/features/sellers/search";
+import { demoSeller } from "@/features/sellers/demo-data";
 
 interface SearchHandlerDependencies {
   checkRateLimit: (key: string) => Promise<boolean>;
@@ -39,5 +40,12 @@ async function checkRateLimit(key: string) {
 
 export const GET = createSearchHandler({
   checkRateLimit,
-  search: async () => ({ status: "none", results: [], disclaimer: NO_RESULT_DISCLAIMER }),
+  search: async ({ type, value }) => {
+    if (process.env.NODE_ENV !== "production" && type === "company_code" && value.replace(/\D/g, "") === "123456789") {
+      const { publishedAt: _publishedAt, timeline: _timeline, sellerResponse: _sellerResponse, sources: _sources, ...result } = demoSeller;
+      void _publishedAt; void _timeline; void _sellerResponse; void _sources;
+      return { status: "match", results: [result], disclaimer: NO_RESULT_DISCLAIMER };
+    }
+    return { status: "none", results: [], disclaimer: NO_RESULT_DISCLAIMER };
+  },
 });
