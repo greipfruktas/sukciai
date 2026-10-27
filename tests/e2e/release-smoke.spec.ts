@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 
 test("release-critical public and administrative routes respond", async ({ page, request }) => {
-  for (const path of ["/", "/pranesti", "/viesieji-pinigai", "/pardavejai/demonstracinis-pardavejas", "/pataisymai", "/admin/review"]) {
+  for (const path of ["/", "/pranesti", "/viesieji-pinigai", "/pardavejai/demonstracinis-pardavejas", "/pataisymai", "/admin/review", "/admin/pranesimai", "/admin/pranesimai/report-demo"]) {
     const response = await request.get(path);
     expect(response.ok(), `${path} should respond`).toBeTruthy();
   }
@@ -13,4 +13,7 @@ test("release-critical public and administrative routes respond", async ({ page,
   await expect(page.getByText("Nepublikuotas juodraštis")).toHaveCount(0);
   const accessibility = await new AxeBuilder({ page }).analyze();
   expect(accessibility.violations).toEqual([]);
+  await page.goto("/admin/pranesimai/report-demo");
+  const adminAccessibility = await new AxeBuilder({ page }).analyze();
+  expect(adminAccessibility.violations).toEqual([]);
 });
