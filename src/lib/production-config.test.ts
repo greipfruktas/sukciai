@@ -10,6 +10,11 @@ describe("production deployment configuration", () => {
     expect(existsSync("next.config.ts")).toBe(false);
   });
 
+  it("builds with Webpack for hosting platforms that only provide SWC WASM", () => {
+    const packageJson = JSON.parse(read("package.json")) as { scripts: { build: string } };
+    expect(packageJson.scripts.build).toBe("next build --webpack");
+  });
+
   it("rejects missing secrets and public object storage", () => {
     expect(() => validateProductionEnvironment({ NODE_ENV: "production" })).toThrow(/DATABASE_URL/);
     expect(() => validateProductionEnvironment({ NODE_ENV: "production", DATABASE_URL: "postgresql://db", IDENTIFIER_HASH_SECRET: "x".repeat(32), OIDC_ISSUER: "https://id.example", OIDC_CLIENT_ID: "client", OIDC_CLIENT_SECRET: "x".repeat(32), OBJECT_STORAGE_ENDPOINT: "https://s3.example", OBJECT_STORAGE_BUCKET: "evidence", OBJECT_STORAGE_ACCESS_KEY: "key", OBJECT_STORAGE_SECRET_KEY: "x".repeat(32), OBJECT_STORAGE_PUBLIC: "true" })).toThrow(/private/);

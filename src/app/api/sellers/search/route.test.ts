@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createSearchHandler } from "./route";
+import { createSearchHandler } from "./handler";
 
 describe("seller search route", () => {
   it("rate limits before querying seller data", async () => {
