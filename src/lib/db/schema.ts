@@ -33,6 +33,7 @@ export const sellerProfileStatus = pgEnum("seller_profile_status", ["verified_di
 export const consumerWorkStatus = pgEnum("consumer_work_status", ["not_done", "partially_done", "late", "defective"]);
 export const consumerReportState = pgEnum("consumer_report_state", ["submitted", "needs_information", "monitoring", "response_pending", "published", "rejected"]);
 export const evidenceScanStatus = pgEnum("evidence_scan_status", ["pending", "clean", "rejected"]);
+export const consumerDecisionAction = pgEnum("consumer_decision_action", ["reject", "request_information", "monitor", "start_response", "publish"]);
 
 export const sellerProfiles = pgTable("seller_profiles", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -105,6 +106,30 @@ export const evidenceFiles = pgTable("evidence_files", {
   sanitized: boolean("sanitized").notNull().default(false),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
+
+export const sellerResponses = pgTable("seller_responses", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  reportId: uuid("report_id").notNull().references(() => consumerReports.id),
+  contactEncrypted: text("contact_encrypted").notNull(),
+  contactedAt: timestamp("contacted_at", { withTimezone: true }).notNull(),
+  deadlineAt: timestamp("deadline_at", { withTimezone: true }).notNull(),
+  urgentRisk: boolean("urgent_risk").notNull().default(false),
+  responseEncrypted: text("response_encrypted"),
+  publicExcerpt: text("public_excerpt"),
+  respondedAt: timestamp("responded_at", { withTimezone: true }),
+});
+
+export const consumerReportDecisions = pgTable("consumer_report_decisions", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  reportId: uuid("report_id").notNull().references(() => consumerReports.id),
+  action: consumerDecisionAction("action").notNull(),
+  reason: text("reason").notNull(),
+  publicationLevel: sellerProfileStatus("publication_level"),
+  expectedVersion: integer("expected_version").notNull(),
+  policyVersion: text("policy_version").notNull(),
+  actorId: text("actor_id").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+}, (table) => [uniqueIndex("consumer_report_decision_version_idx").on(table.reportId, table.expectedVersion)]);
 
 export const sources = pgTable("sources", {
   id: uuid("id").primaryKey().defaultRandom(),

@@ -21,6 +21,39 @@ export interface DecisionRepository {
   applyDecision(decision: Decision): Promise<void>;
 }
 
+export class DecisionConflictError extends Error {
+  constructor() {
+    super("Report decision version conflict");
+    this.name = "DecisionConflictError";
+  }
+}
+
+export type ConsumerDecisionAction = "reject" | "request_information" | "monitor" | "start_response" | "publish";
+
+interface ConsumerDecisionInput {
+  reportId: string;
+  action: ConsumerDecisionAction;
+  reason: string;
+  expectedVersion: number;
+  publicationLevel?: "verified_dispute" | "repeated_pattern" | "official_process";
+}
+
+interface ConsumerDecisionRepository {
+  applyConsumerDecision(decision: ConsumerDecisionInput & { actorId: string; policyVersion: "consumer-1.0.0"; createdAt: Date }): Promise<void>;
+}
+
+export async function applyConsumerDecision(
+  input: ConsumerDecisionInput,
+  user: AuthenticatedUser,
+  repository: ConsumerDecisionRepository,
+): Promise<void> {
+  requirePublisher(user);
+  const reason = input.reason.trim();
+  if (!reason) throw new Error("Decision reason is required");
+  if (input.action === "publish" && !input.publicationLevel) throw new Error("Publication level is required");
+  await repository.applyConsumerDecision({ ...input, reason, actorId: user.id, policyVersion: "consumer-1.0.0", createdAt: new Date() });
+}
+
 function requirePublisher(user: AuthenticatedUser): void {
   if (!canPublish(user)) throw new AuthorizationError();
 }
