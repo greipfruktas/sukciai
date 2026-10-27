@@ -3,8 +3,8 @@ import Link from "next/link";
 import "@/styles/globals.css";
 
 export const metadata: Metadata = {
-  title: "Sukčiai.lt | Viešųjų pinigų stebėsena",
-  description: "Šaltiniais pagrįsta Lietuvos viešųjų pinigų ir piktnaudžiavimo stebėsena.",
+  title: "Sukčiai.lt | Patikrinkite prieš mokėdami",
+  description: "Patikrintų vartotojų ginčų ir oficialių šaltinių informacijos portalas.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
@@ -14,15 +14,15 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <a className="skip-link" href="#turinys">Pereiti prie turinio</a>
         <header className="site-header">
           <div className="utility-bar">
-            <span>Trečiadienis, rugsėjo 9 d.</span>
-            <span>Šaltiniais pagrįsta viešųjų lėšų stebėsena</span>
+            <span>Vartotojų saugumo portalas</span>
+            <span>Patikrinta informacija · šaltiniai · atsakymo teisė</span>
           </div>
           <div className="masthead">
             <Link className="wordmark" href="/" aria-label="Sukčiai.lt pradžia">SUKČIAI<span>.LT</span></Link>
-            <p>Faktai. Būsena. Šaltiniai.</p>
+            <p>Patikrinkite prieš mokėdami.</p>
           </div>
           <nav className="main-nav" aria-label="Pagrindinė navigacija">
-            <Link href="/">Naujausia</Link><Link href="/skaidrinam">Skaidrinam</Link><Link href="/paieska">Atvejų registras</Link><Link href="/savivaldybes/demonstracine">Savivaldybės</Link><Link href="/metodika">Metodika</Link><Link className="nav-search" href="/paieska">Paieška <span aria-hidden="true">⌕</span></Link>
+            <Link href="/">Tikrinti pardavėją</Link><Link href="/pranesti">Pranešti atvejį</Link><Link href="/pardavejai/demonstracinis-pardavejas">Patikrintas pavyzdys</Link><Link href="/viesieji-pinigai">Viešieji pinigai</Link><Link href="/metodika">Metodika</Link>
           </nav>
         </header>
         {children}
