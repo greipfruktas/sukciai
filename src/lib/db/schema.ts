@@ -9,6 +9,7 @@ import {
   primaryKey,
   text,
   timestamp,
+  uniqueIndex,
   uuid,
 } from "drizzle-orm/pg-core";
 
@@ -27,6 +28,31 @@ export const caseStatus = pgEnum("case_status", [
 ]);
 export const publicationState = pgEnum("publication_state", ["draft", "review", "published", "rejected"]);
 export const decisionAction = pgEnum("decision_action", ["publish", "review", "block", "approve", "reject"]);
+export const sellerIdentifierType = pgEnum("seller_identifier_type", ["phone", "iban", "company_code", "name", "website", "facebook"]);
+export const sellerProfileStatus = pgEnum("seller_profile_status", ["verified_dispute", "repeated_pattern", "official_process"]);
+
+export const sellerProfiles = pgTable("seller_profiles", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  slug: text("slug").notNull().unique(),
+  displayName: text("display_name").notNull(),
+  status: sellerProfileStatus("status").notNull(),
+  summary: text("summary").notNull(),
+  publishedAt: timestamp("published_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const sellerIdentifiers = pgTable("seller_identifiers", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  sellerProfileId: uuid("seller_profile_id").notNull().references(() => sellerProfiles.id),
+  type: sellerIdentifierType("type").notNull(),
+  encryptedValue: text("encrypted_value").notNull(),
+  lookupHash: text("lookup_hash").notNull(),
+  maskedValue: text("masked_value").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+}, (table) => [
+  uniqueIndex("seller_identifier_type_lookup_idx").on(table.type, table.lookupHash),
+]);
 
 export const sources = pgTable("sources", {
   id: uuid("id").primaryKey().defaultRandom(),
